@@ -20,3 +20,5 @@ You may now launch Paint.NET and open a DDS file.
 When Paint.NET has an update, you `must` re-run the installer, it will ensure that the plugin is up-to-date and ready to go.
 
 This plugin is provided as-is with no warranty provided. Use at your own risk.
+
+Wanna help? Send a message to `Rick Brewster` over at [https://forums.getpaint.net/](https://forums.getpaint.net/) asking for the ability to override default filetypes via plugins! This will make it easier to use our custom DDS plugin, without the need for an installer!
