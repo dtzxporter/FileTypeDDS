@@ -23,8 +23,16 @@ namespace FileTypeDDSInstaller
 
         private void BackOut_Click(object sender, EventArgs e)
         {
-            // Just close
-            this.Close();
+            // Disable us
+            this.InstallGo.Enabled = false;
+            this.UninstallButton.Enabled = false;
+            // Make visible
+            this.ProgressLoad.Visible = true;
+
+            PreOps();
+
+            // Run the patcher
+            Task.Run((Action)RunUnPatcher);
         }
 
         private string GetNGENPath()
@@ -45,6 +53,105 @@ namespace FileTypeDDSInstaller
             psi.CreateNoWindow = true;
             Process process = Process.Start(psi);
             process.WaitForExit();
+        }
+
+        private void RunUnPatcher()
+        {
+            // Locate the Paint.NET exe
+            var ProgramFilesBase = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            var ProgramFilesNew = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+
+            // Final path
+            var ProgramPath = "";
+
+            // Check each path
+            if (File.Exists(Path.Combine(ProgramFilesBase, "paint.net\\PaintDotNet.exe")))
+            {
+                ProgramPath = Path.Combine(ProgramFilesBase, "paint.net\\PaintDotNet.exe");
+            }
+            else if (File.Exists(Path.Combine(ProgramFilesNew, "paint.net\\PaintDotNet.exe")))
+            {
+                ProgramPath = Path.Combine(ProgramFilesNew, "paint.net\\PaintDotNet.exe");
+            }
+            else
+            {
+                // Ask the user to locate it
+                this.Invoke((Action)delegate
+                {
+                    // Ask
+                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK && openFileDialog.FileName.Contains("PaintDotNet.exe"))
+                    {
+                        // Set
+                        ProgramPath = openFileDialog.FileName;
+                    }
+                    else
+                    {
+                        // Alert and close
+                        MessageBox.Show("Failed to locate Paint.NET. Please verify that it is installed properly.", "FileTypeDDS", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Close
+                        this.Close();
+                    }
+                });
+            }
+
+            // Perform NGen installation
+            var NGenPath = GetNGENPath();
+
+            // Uninstall first, then install
+            RunProcess(NGenPath, "uninstall \"" + ProgramPath + "\"");
+
+            // Replace with the backup image, if available...
+            if (File.Exists(ProgramPath + ".bak"))
+            {
+                try
+                {
+                    File.Copy(ProgramPath + ".bak", ProgramPath, true);
+                }
+                catch
+                {
+                    // Nothing...
+                }
+            }
+
+            // Reinstall...
+            RunProcess(NGenPath, "install \"" + ProgramPath + "\"");
+
+            try
+            {
+                if (UIntPtr.Size == 8)
+                {
+                    File.Delete(Path.Combine(Path.GetDirectoryName(ProgramPath), "FileTypes\\FileTypeDDS64.dll"));
+                }
+                else
+                {
+                    File.Delete(Path.Combine(Path.GetDirectoryName(ProgramPath), "FileTypes\\FileTypeDDS32.dll"));
+                }
+            }
+            catch
+            {
+            }
+
+            // Done, invoke and set dialog
+            this.Invoke((Action)delegate
+            {
+                // Alert
+                MessageBox.Show("FileTypeDDS has been removed. You may now relaunch Paint.NET.", "FileTypeDDS", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Close
+                this.Close();
+            });
+        }
+
+        private void PreOps()
+        {
+            try
+            {
+                foreach (Process proc in Process.GetProcessesByName("PaintDotNet"))
+                    proc.Kill();
+            }
+            catch
+            {
+
+            }
         }
 
         private void RunPatcher()
@@ -166,9 +273,12 @@ namespace FileTypeDDSInstaller
         {
             // Disable us
             this.InstallGo.Enabled = false;
-            this.BackOut.Enabled = false;
+            this.UninstallButton.Enabled = false;
             // Make visible
             this.ProgressLoad.Visible = true;
+
+            PreOps();
+
             // Run the patcher
             Task.Run((Action)RunPatcher);
         }

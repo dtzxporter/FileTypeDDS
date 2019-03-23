@@ -22,26 +22,29 @@ using namespace System::IO;
 using namespace FileTypeDDS;
 using namespace PaintDotNet;
 
-DDSFileType::DDSFileType() : FileType("DirectDraw Surface (DDS)", FileTypeFlags::SupportsLoading, Extensions)
+DDSFileType::DDSFileType() : PropertyBasedFileType("DirectDraw Surface (DDS)", FileTypeFlags::SupportsLoading | FileTypeFlags::SupportsSaving | FileTypeFlags::SavesWithProgress, Extensions)
 {
-	// Perform initialization here, for this, we're going to reflect into PaintDotNet and verify that the EXE was patched
+	// Perform initialization here, for this, we're going to reflect into PaintDotNet and borrow the old DDS saving logic
 	Assembly^ CurrentAssembly = Assembly::GetEntryAssembly();
 	// Reflect to the "PdnFileTypes" class
 	try
 	{
-		//// Fetch the type
-		//auto FileType = CurrentAssembly->GetType("PaintDotNet.Data.PdnFileTypes");
+#if _DEBUG
+		System::Windows::Forms::MessageBox::Show("FileTypeDDS -- DEBUG MODE --");
+#endif
 
-		//auto field = FileType->GetField("Dds");
+		// Fetch the type
+		auto FileType = CurrentAssembly->GetType("PaintDotNet.Data.Dds.DdsFileType");
+		this->InternalFileType = (PropertyBasedFileType^)Activator::CreateInstance(FileType);
 
-		//auto res = field->FieldHandle.Value.ToInt64();
-
-		//System::Windows::Forms::MessageBox::Show("fff " + field->Name + " 0x" + res.ToString("X"));
+#if _DEBUG
+		System::Windows::Forms::MessageBox::Show("FileTypeDDS -- Loaded internal file handler --");
+#endif
 	}
 	catch (Exception^ ex)
 	{
-		// Display the error, this shouldn't happen with release builds
-		System::Windows::Forms::MessageBox::Show("FileTypeDDS - Failed to verify installation. (Report this) [" + ex->Message + "]");
+		// Display the error
+		System::Windows::Forms::MessageBox::Show("FileTypeDDS - Failed to initialize plugin. (Report this on Github) [" + ex->Message + "]", "FileTypeDDS");
 	}
 }
 
@@ -130,7 +133,7 @@ Document^ DDSFileType::OnLoad(Stream^ Input)
 			auto TemporaryImage = std::make_unique<DirectX::ScratchImage>();
 
 			// We must use this format for global support, it's a standard for images
-			DXGI_FORMAT ResultFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			DXGI_FORMAT ResultFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 			// Decompress the image
 			auto Result = DirectX::Decompress(FirstImage, ImageCount, ImageMetadata, ResultFormat, *TemporaryImage);
 
@@ -152,13 +155,13 @@ Document^ DDSFileType::OnLoad(Stream^ Input)
 				return nullptr;
 			}
 		}
-		else if (ImageMetadata.format != DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM)
+		else if (ImageMetadata.format != DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM)
 		{
 			// Allocate a temporary buffer
 			auto TemporaryImage = std::make_unique<DirectX::ScratchImage>();
 
 			// We must use this format for global support, it's a standard for images
-			DXGI_FORMAT ResultFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			DXGI_FORMAT ResultFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 			// Convert to our format
 			auto Result = DirectX::Convert(Image->GetImages(), Image->GetImageCount(), Image->GetMetadata(), ResultFormat, DirectX::TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, *TemporaryImage);
 
@@ -181,38 +184,19 @@ Document^ DDSFileType::OnLoad(Stream^ Input)
 			}
 		}
 
-		// Prepare a new layer for the document, this will house the RGBA data
-		BitmapLayer^ DocumentLayer = Layer::CreateBackgroundLayer((int)ImageMetadata.width, (int)ImageMetadata.height);
-		// Color buffer
-		ColorBgra ColorBuffer;
-		// A pointer to the raw pixels in RGBA format
-		auto RawPixels = Image->GetPixels();
-		// The index of the pixels
-		uint32_t PixelIndex = 0;
-		// Loop for height and width and copy over the RGBA pixel data
-		for (int i = 0; i < (int)ImageMetadata.height; i++)
-		{
-			for (int j = 0; j < (int)ImageMetadata.width; j++)
-			{
-				// Set
-				ColorBuffer.R = RawPixels[PixelIndex];
-				ColorBuffer.G = RawPixels[PixelIndex + 1];
-				ColorBuffer.B = RawPixels[PixelIndex + 2];
-				ColorBuffer.A = RawPixels[PixelIndex + 3];
-				// Advance
-				PixelIndex += 4;
-				// Set the item
-				DocumentLayer->Surface[j, i] = ColorBuffer;
-			}
-		}
+		// Prepare a new layer for the document, this will house the BGRA data
+		Document^ ResultDocument = gcnew Document((int)ImageMetadata.width, (int)ImageMetadata.height);
+		ResultDocument->Layers->Add(Layer::CreateBackgroundLayer((int)ImageMetadata.width, (int)ImageMetadata.height));
+
+		// A pointer to the raw pixels in BGRA format
+		auto Buffer = Image->GetPixels();
+		auto DestPtr = ((BitmapLayer^)ResultDocument->Layers[0])->Surface->Scan0->VoidStar;
+
+		// Copy the raw pixels
+		std::memcpy(DestPtr, Buffer, ImageMetadata.width * ImageMetadata.height * 4);
 
 		// Force clean up
 		Image.reset();
-
-		// Make a document
-		Document^ ResultDocument = gcnew Document((int)ImageMetadata.width, (int)ImageMetadata.height);
-		// Add the layer
-		ResultDocument->Layers->Add(DocumentLayer);
 
 		// Return a test doc
 		return ResultDocument;
@@ -220,6 +204,21 @@ Document^ DDSFileType::OnLoad(Stream^ Input)
 
 	// We failed to load
 	return nullptr;
+}
+
+void DDSFileType::OnSaveT(Document^ Input, Stream^ Output, PropertyBasedSaveConfigToken^ Token, Surface^ Surface, ProgressEventHandler^ Callback)
+{
+	this->InternalFileType->Save(Input, Output, Token, Surface, Callback, false);
+}
+
+ControlInfo^ DDSFileType::OnCreateSaveConfigUI(PropertyCollection^ Props)
+{
+	return this->InternalFileType->OnCreateSaveConfigUI(Props);
+}
+
+PropertyCollection^ DDSFileType::OnCreateSavePropertyCollection()
+{
+	return this->InternalFileType->OnCreateSavePropertyCollection();
 }
 
 array<FileType^>^ DDSFileTypes::GetFileTypeInstances()

@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.InstallGo = new System.Windows.Forms.Button();
-            this.BackOut = new System.Windows.Forms.Button();
+            this.UninstallButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.ProgressLoad = new System.Windows.Forms.ProgressBar();
@@ -48,16 +48,16 @@
             this.InstallGo.UseVisualStyleBackColor = true;
             this.InstallGo.Click += new System.EventHandler(this.InstallGo_Click);
             // 
-            // BackOut
+            // UninstallButton
             // 
-            this.BackOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BackOut.Location = new System.Drawing.Point(12, 254);
-            this.BackOut.Name = "BackOut";
-            this.BackOut.Size = new System.Drawing.Size(103, 38);
-            this.BackOut.TabIndex = 1;
-            this.BackOut.Text = "Cancel";
-            this.BackOut.UseVisualStyleBackColor = true;
-            this.BackOut.Click += new System.EventHandler(this.BackOut_Click);
+            this.UninstallButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.UninstallButton.Location = new System.Drawing.Point(12, 254);
+            this.UninstallButton.Name = "UninstallButton";
+            this.UninstallButton.Size = new System.Drawing.Size(103, 38);
+            this.UninstallButton.TabIndex = 1;
+            this.UninstallButton.Text = "Uninstall";
+            this.UninstallButton.UseVisualStyleBackColor = true;
+            this.UninstallButton.Click += new System.EventHandler(this.BackOut_Click);
             // 
             // label1
             // 
@@ -107,7 +107,7 @@
             this.Controls.Add(this.ProgressLoad);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.BackOut);
+            this.Controls.Add(this.UninstallButton);
             this.Controls.Add(this.InstallGo);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -123,7 +123,7 @@
         #endregion
 
         private System.Windows.Forms.Button InstallGo;
-        private System.Windows.Forms.Button BackOut;
+        private System.Windows.Forms.Button UninstallButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ProgressBar ProgressLoad;
