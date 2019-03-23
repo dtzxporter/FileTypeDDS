@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTex", "..\..\deps\Di
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTypeDDSInstaller", "FileTypeDDSInstaller\FileTypeDDSInstaller.csproj", "{B52721A0-14B5-438E-8359-70A406CB037D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTypeDDSEffect", "FileTypeDDSEffect\FileTypeDDSEffect.csproj", "{ECCCB43B-AE85-4431-86DB-17C761976DEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,24 @@ Global
 		{B52721A0-14B5-438E-8359-70A406CB037D}.Release|Win32.Build.0 = Release|Any CPU
 		{B52721A0-14B5-438E-8359-70A406CB037D}.Release|x64.ActiveCfg = Release|Any CPU
 		{B52721A0-14B5-438E-8359-70A406CB037D}.Release|x64.Build.0 = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Profile|Any CPU.Build.0 = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Profile|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Profile|Mixed Platforms.Build.0 = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Profile|Win32.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Profile|x64.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Release|Win32.ActiveCfg = Release|Any CPU
+		{ECCCB43B-AE85-4431-86DB-17C761976DEA}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
