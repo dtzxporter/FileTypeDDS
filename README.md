@@ -1,10 +1,10 @@
 # FileTypeDDS
 A less shitty DDS plugin for Paint.NET
 
-*Read and soon write DDS files, extremely fast, in your favorite image editor.*
+*Read and write DDS files, extremely fast, in your favorite image editor.*
 
-- Read just about any DDS file (Including modern ones!)
-- Write to over 50 different DDS formats
+- Read just about any DDS file (NEW DDS FILES SUPPORTED)
+- Write the DDS back to a file
 - Fast performance, easy to use installer
 
 ## Installation:
@@ -14,6 +14,10 @@ Download the latest [Release.zip](https://github.com/dtzxporter/FileTypeDDS/rele
 Next, launch `FileTypeDDSInstaller.exe` and run as admin if prompted to do so. Click `install` and wait, this will only take a few moments.
 
 You may now launch Paint.NET and open a DDS file.
+
+## Uninstall:
+
+Relaunch `FileTypeDDSInstaller.exe` and run as admin if prompted to do so. Click `uninstall` and wait, this will only take a few moments.
 
 ## Notes:
 
